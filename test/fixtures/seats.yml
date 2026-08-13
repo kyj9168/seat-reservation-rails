@@ -1,0 +1,11 @@
+one:
+  label: TEST-A-01
+  zone: A
+  active: true
+  test_only: false
+
+two:
+  label: TEST-A-02
+  zone: A
+  active: true
+  test_only: false

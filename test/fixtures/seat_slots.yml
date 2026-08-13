@@ -1,0 +1,11 @@
+one:
+  seat: one
+  reservation_date: <%= Date.current %>
+  status: available
+  lock_version: 0
+
+two:
+  seat: two
+  reservation_date: <%= Date.current %>
+  status: available
+  lock_version: 0
