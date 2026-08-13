@@ -1,0 +1,10 @@
+<% content_for :title, "비밀번호 찾기" %>
+<section class="auth-card">
+  <p class="eyebrow">RESET PASSWORD</p>
+  <h1>비밀번호 찾기</h1>
+  <p class="subtitle">가입 이메일로 15분 동안 유효한 재설정 링크를 보냅니다.</p>
+  <%= form_with url: password_path, class: "stack-form" do |form| %>
+    <div class="field"><%= form.label :email_address, "이메일" %><%= form.email_field :email_address, required: true, autocomplete: "email" %></div>
+    <%= form.submit "재설정 링크 받기", class: "button button-primary" %>
+  <% end %>
+</section>

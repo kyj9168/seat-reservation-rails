@@ -1,0 +1,15 @@
+<% content_for :title, "로그인" %>
+<section class="auth-card">
+  <p class="eyebrow">SIGN IN</p>
+  <h1>로그인</h1>
+  <%= form_with url: session_path, class: "stack-form" do |form| %>
+    <div class="field"><%= form.label :username, "아이디" %><%= form.text_field :username, required: true, autofocus: true, autocomplete: "username" %></div>
+    <div class="field"><%= form.label :password, "비밀번호" %><%= form.password_field :password, required: true, autocomplete: "current-password" %></div>
+    <%= form.submit "로그인", class: "button button-primary button-large" %>
+  <% end %>
+  <div class="auth-links">
+    <%= link_to "회원가입", new_registration_path %>
+    <%= link_to "아이디 찾기", new_username_lookup_path %>
+    <%= link_to "비밀번호 찾기", new_password_path %>
+  </div>
+</section>

@@ -1,0 +1,21 @@
+<% content_for :title, "100명 동시 예약 테스트" %>
+
+<section class="page-heading compact">
+  <div><p class="eyebrow">CONCURRENCY LAB</p><h1>100명 동시 예약 테스트</h1><p class="subtitle">샘플 사용자 100명이 전용 좌석 하나를 같은 순간에 선점하고 결제합니다.</p></div>
+</section>
+
+<section class="test-panel">
+  <div class="test-facts"><div><strong><%= @sample_user_count %></strong><span>샘플 사용자</span></div><div><strong><%= @test_seat&.label || "없음" %></strong><span>전용 좌석</span></div><div><strong>1</strong><span>예상 성공</span></div><div><strong>99</strong><span>예상 충돌</span></div></div>
+  <p>실행할 때 전용 좌석의 이전 테스트 결제·이력만 초기화합니다. 일반 사용자 데이터에는 영향을 주지 않습니다.</p>
+  <%= button_to "100명 동시 예약 실행", admin_concurrency_test_path, class: "button button-primary button-large", data: { turbo_submits_with: "100명이 동시에 시도 중..." } %>
+</section>
+
+<% if @result %>
+  <section class="result-panel <%= @result[:success_count] == 1 && @result[:conflict_count] == 99 ? "success" : "failure" %>">
+    <h2>실행 결과</h2>
+    <div class="result-grid"><div><strong><%= @result[:attempted] %></strong><span>전체 시도</span></div><div><strong><%= @result[:success_count] %></strong><span>예약 성공</span></div><div><strong><%= @result[:conflict_count] %></strong><span>선점 실패</span></div><div><strong><%= @result[:elapsed] %>초</strong><span>소요 시간</span></div></div>
+    <p>최종 예약자: <strong><%= @result[:winner]&.display_name || "없음" %></strong></p>
+    <p>결제번호: <code><%= @result[:payment]&.transaction_id || "없음" %></code></p>
+    <% if @result[:errors].any? %><p class="muted">충돌 응답: <%= @result[:errors].join(", ") %></p><% end %>
+  </section>
+<% end %>

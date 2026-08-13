@@ -1,0 +1,79 @@
+<% content_for :title, "도서관 좌석 예약" %>
+
+<section class="page-heading reservation-heading">
+  <div>
+    <p class="eyebrow">DAILY LIBRARY SEATS</p>
+    <h1>오늘의 자리를 선택하세요</h1>
+    <p class="subtitle">좌석 선택 후 5분 안에 결제하면 예약이 확정됩니다.</p>
+  </div>
+
+  <%= form_with url: seat_slots_path, method: :get, class: "date-picker" do |form| %>
+    <%= form.label :date, "이용일" %>
+    <%= form.date_field :date,
+      value: @date,
+      min: Date.current,
+      max: 30.days.from_now.to_date,
+      onchange: "this.form.requestSubmit()" %>
+  <% end %>
+</section>
+
+<section class="reservation-summary" aria-label="좌석 현황">
+  <div><strong><%= @date.strftime("%Y.%m.%d") %></strong><span>이용일</span></div>
+  <div><strong><%= @slots.size - @held_count - @reserved_count %></strong><span>이용 가능</span></div>
+  <div><strong><%= @held_count %></strong><span>결제 대기</span></div>
+  <div><strong><%= @reserved_count %></strong><span>예약 완료</span></div>
+</section>
+
+<div class="seat-legend">
+  <span><i class="legend-dot available"></i>이용 가능</span>
+  <span><i class="legend-dot held"></i>결제 대기</span>
+  <span><i class="legend-dot reserved"></i>예약 완료</span>
+</div>
+
+<section class="seat-grid" aria-label="좌석 목록">
+  <% @slots.each do |slot| %>
+    <% mine = slot[:user_id] == current_user.id %>
+    <article class="seat-card <%= slot[:status] %> <%= "mine" if mine %>">
+      <div class="seat-card-header">
+        <span class="seat-zone"><%= slot[:zone] %> ZONE</span>
+        <strong><%= slot[:label] %></strong>
+      </div>
+
+      <% case slot[:status] %>
+      <% when "available" %>
+        <p class="seat-status">지금 선택할 수 있습니다.</p>
+        <%= button_to "이 자리 선택",
+          hold_seat_slot_path(slot[:id]),
+          class: "button button-primary" %>
+      <% when "held" %>
+        <% if mine %>
+          <p class="seat-status emphasis">내가 선점한 자리</p>
+          <p class="countdown" data-controller="countdown" data-countdown-expires-at-value="<%= slot[:hold_expires_at].iso8601 %>">
+            남은 시간 <strong data-countdown-target="output">--:--</strong>
+          </p>
+          <%= link_to "결제 계속하기", checkout_seat_slot_path(slot[:id]), class: "button button-primary" %>
+          <%= button_to "선점 취소",
+            release_seat_slot_path(slot[:id]),
+            method: :delete,
+            class: "button button-secondary" %>
+        <% else %>
+          <p class="seat-status">다른 사용자가 결제 중입니다.</p>
+          <span class="unavailable-label">선택 불가</span>
+        <% end %>
+      <% when "reserved" %>
+        <% if mine %>
+          <p class="seat-status emphasis">내 예약 완료</p>
+          <p class="seat-message">결제가 완료된 자리입니다. 환불은 관리자에게 요청해 주세요.</p>
+        <% else %>
+          <p class="seat-status">예약이 완료된 자리입니다.</p>
+          <span class="unavailable-label">선택 불가</span>
+        <% end %>
+      <% end %>
+    </article>
+  <% end %>
+</section>
+
+<aside class="concurrency-note">
+  <strong>좌석 선점 규칙</strong>
+  <p>같은 좌석을 동시에 눌러도 한 명만 선점합니다. 5분 동안 결제하지 않거나 다른 좌석을 선택하면 기존 선점은 해제됩니다.</p>
+</aside>

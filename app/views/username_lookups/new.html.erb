@@ -1,0 +1,15 @@
+<% content_for :title, "아이디 찾기" %>
+<section class="auth-card">
+  <p class="eyebrow">FIND USERNAME</p>
+  <h1>아이디 찾기</h1>
+  <p class="subtitle">가입할 때 사용한 이름과 이메일을 입력하세요.</p>
+  <%= form_with url: username_lookup_path, class: "stack-form" do |form| %>
+    <div class="field"><%= form.label :name, "이름" %><%= form.text_field :name, required: true %></div>
+    <div class="field"><%= form.label :email_address, "이메일" %><%= form.email_field :email_address, required: true %></div>
+    <%= form.submit "아이디 찾기", class: "button button-primary" %>
+  <% end %>
+  <% if defined?(@user) %>
+    <% if @user %><div class="lookup-result">회원님의 아이디는 <strong><%= @user.masked_username %></strong>입니다.</div>
+    <% else %><div class="alert inline">일치하는 회원을 찾지 못했습니다.</div><% end %>
+  <% end %>
+</section>

@@ -1,0 +1,12 @@
+<% content_for :title, "기능 테스트 안내" %>
+
+<section class="page-heading compact"><div><p class="eyebrow">TEST GUIDE</p><h1>브라우저 테스트 페이지</h1><p class="subtitle">일반 사용자와 관리자의 전체 흐름을 순서대로 확인할 수 있습니다.</p></div></section>
+
+<section class="credential-grid">
+  <article class="credential-card"><h2>일반 사용자</h2><dl><dt>아이디</dt><dd><code>demo_user</code></dd><dt>비밀번호</dt><dd><code>password123!</code></dd><dt>이메일</dt><dd><code>demo@library.local</code></dd></dl></article>
+  <article class="credential-card admin"><h2>관리자</h2><dl><dt>아이디</dt><dd><code>admin</code></dd><dt>비밀번호</dt><dd><code>admin123!</code></dd><dt>이메일</dt><dd><code>admin@library.local</code></dd></dl></article>
+</section>
+
+<section class="test-steps"><h2>기능 확인 순서</h2><ol><li><strong>회원 기능</strong><span>로그아웃한 뒤 회원가입, 로그인, 아이디 찾기, 비밀번호 재설정을 확인합니다.</span></li><li><strong>좌석 선점</strong><span>일반 사용자로 좌석을 선택하고 5분 카운트다운을 확인합니다.</span></li><li><strong>결제와 예약</strong><span>테스트 결제를 누르면 예약 완료로 바뀌고 다른 사용자는 선택할 수 없습니다.</span></li><li><strong>관리자 환불</strong><span>관리자 현황에서 환불 사유를 입력하면 좌석이 다시 이용 가능해집니다.</span></li><li><strong>동시성</strong><span>전용 실험실에서 사용자 100명이 한 좌석을 동시에 예약해 성공 1건인지 확인합니다.</span></li></ol></section>
+
+<div class="test-actions"><%= link_to "좌석 예약 화면", seat_slots_path, class: "button button-secondary" %><%= link_to "관리자 현황", admin_root_path, class: "button button-secondary" %><%= link_to "100명 동시성 테스트", admin_concurrency_test_path, class: "button button-primary" %></div>

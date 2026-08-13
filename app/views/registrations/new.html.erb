@@ -1,0 +1,14 @@
+<% content_for :title, "회원가입" %>
+<section class="auth-card wide">
+  <p class="eyebrow">CREATE ACCOUNT</p>
+  <h1>회원가입</h1>
+  <% if @user.errors.any? %><div class="error-box"><strong>입력 내용을 확인해 주세요.</strong><ul><% @user.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></div><% end %>
+  <%= form_with model: @user, url: registration_path, class: "stack-form" do |form| %>
+    <div class="field"><%= form.label :name, "이름" %><%= form.text_field :name, required: true, autocomplete: "name" %></div>
+    <div class="field"><%= form.label :username, "아이디 (영문 소문자·숫자·밑줄)" %><%= form.text_field :username, required: true, autocomplete: "username" %></div>
+    <div class="field"><%= form.label :email_address, "이메일" %><%= form.email_field :email_address, required: true, autocomplete: "email" %></div>
+    <div class="field"><%= form.label :password, "비밀번호 (8자 이상)" %><%= form.password_field :password, required: true, autocomplete: "new-password" %></div>
+    <div class="field"><%= form.label :password_confirmation, "비밀번호 확인" %><%= form.password_field :password_confirmation, required: true, autocomplete: "new-password" %></div>
+    <%= form.submit "가입하기", class: "button button-primary button-large" %>
+  <% end %>
+</section>

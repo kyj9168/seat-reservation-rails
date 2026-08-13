@@ -1,0 +1,33 @@
+<% content_for :title, "결제하기" %>
+
+<section class="checkout-card">
+  <p class="eyebrow">CHECKOUT</p>
+  <h1><%= @seat_slot.seat.label %> 좌석 결제</h1>
+  <p class="subtitle"><%= @seat_slot.reservation_date.strftime("%Y년 %m월 %d일") %> · <%= @seat_slot.seat.zone %> ZONE</p>
+
+  <div class="payment-timer" data-controller="countdown" data-countdown-expires-at-value="<%= @seat_slot.hold_expires_at.iso8601 %>">
+    결제 남은 시간 <strong data-countdown-target="output">--:--</strong>
+  </div>
+
+  <dl class="checkout-summary">
+    <div><dt>예약자</dt><dd><%= current_user.name %> (<%= current_user.username %>)</dd></div>
+    <div><dt>좌석</dt><dd><%= @seat_slot.seat.label %></dd></div>
+    <div><dt>이용일</dt><dd><%= @seat_slot.reservation_date.strftime("%Y.%m.%d") %></dd></div>
+    <div><dt>결제금액</dt><dd><strong><%= Seat::RESERVATION_PRICE.to_fs(:delimited) %>원</strong></dd></div>
+  </dl>
+
+  <div class="demo-payment-note">
+    현재는 PG사가 연결되지 않은 테스트 결제입니다. 버튼을 누르면 결제 성공으로 시뮬레이션합니다.
+  </div>
+
+  <div class="checkout-actions">
+    <%= button_to "테스트 결제하고 예약 확정",
+      pay_seat_slot_path(@seat_slot),
+      class: "button button-primary button-large",
+      data: { turbo_submits_with: "결제 처리 중..." } %>
+    <%= button_to "선점 취소",
+      release_seat_slot_path(@seat_slot),
+      method: :delete,
+      class: "button button-secondary" %>
+  </div>
+</section>

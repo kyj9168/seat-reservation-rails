@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title><%= content_for(:title) || "도서관 좌석 예약" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="도서관 좌석 예약">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <%= link_to "LIBRARY SEAT", root_path, class: "brand" %>
+        <nav class="header-actions">
+          <% if authenticated? %>
+            <%= link_to "좌석 예약", seat_slots_path, class: "header-link" %>
+            <% if current_user.admin? %>
+              <%= link_to "관리자", admin_root_path, class: "header-link" %>
+              <%= link_to "테스트", test_page_path, class: "header-link" %>
+            <% end %>
+            <span class="user-chip"><%= current_user.name %></span>
+            <%= button_to "로그아웃", session_path, method: :delete, class: "link-button" %>
+          <% else %>
+            <%= link_to "로그인", new_session_path, class: "header-link" %>
+            <%= link_to "회원가입", new_registration_path, class: "button button-primary button-small" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container page-content">
+      <% if notice.present? %><div class="notice"><%= notice %></div><% end %>
+      <% if alert.present? %><div class="alert"><%= alert %></div><% end %>
+      <% if flash[:demo_password_reset_url].present? %>
+        <div class="demo-link"><strong>데모용 재설정 링크</strong><%= link_to "비밀번호 변경 화면 열기", flash[:demo_password_reset_url] %></div>
+      <% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

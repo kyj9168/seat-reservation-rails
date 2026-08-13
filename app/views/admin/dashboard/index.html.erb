@@ -1,0 +1,46 @@
+<% content_for :title, "관리자 현황" %>
+
+<section class="page-heading reservation-heading">
+  <div><p class="eyebrow">ADMIN DASHBOARD</p><h1>좌석·결제 현황</h1><p class="subtitle">선점, 예약, 결제와 환불 이력을 관리합니다.</p></div>
+  <%= form_with url: admin_root_path, method: :get, class: "date-picker" do |form| %>
+    <%= form.label :date, "조회일" %>
+    <%= form.date_field :date, value: @date, onchange: "this.form.requestSubmit()" %>
+  <% end %>
+</section>
+
+<section class="reservation-summary admin-summary">
+  <div><strong><%= User.count %></strong><span>전체 사용자</span></div>
+  <div><strong><%= @slots.available.count %></strong><span>이용 가능</span></div>
+  <div><strong><%= @slots.held.count %></strong><span>결제 대기</span></div>
+  <div><strong><%= @slots.reserved.count %></strong><span>예약 완료</span></div>
+  <div><strong><%= @payments.paid.sum(&:amount).to_fs(:delimited) %>원</strong><span>결제 유지액</span></div>
+</section>
+
+<section class="admin-section">
+  <h2>좌석 상태</h2>
+  <div class="table-wrap"><table><thead><tr><th>좌석</th><th>상태</th><th>사용자</th><th>선점 만료</th></tr></thead><tbody>
+    <% @slots.each do |slot| %><tr><td><strong><%= slot.seat.label %></strong></td><td><span class="status-badge <%= slot.status %>"><%= seat_status_label(slot.status) %></span></td><td><%= slot.user&.display_name || "-" %></td><td><%= slot.hold_expires_at&.strftime("%H:%M:%S") || "-" %></td></tr><% end %>
+  </tbody></table></div>
+</section>
+
+<section class="admin-section">
+  <h2>결제·환불</h2>
+  <div class="table-wrap"><table><thead><tr><th>결제번호</th><th>사용자/좌석</th><th>금액</th><th>상태</th><th>처리</th></tr></thead><tbody>
+    <% @payments.each do |payment| %>
+      <tr><td class="mono"><%= payment.transaction_id %></td><td><%= payment.user.name %> · <%= payment.seat_slot.seat.label %></td><td><%= payment.amount.to_fs(:delimited) %>원</td><td><span class="status-badge <%= payment.status %>"><%= payment.paid? ? "결제 완료" : "환불 완료" %></span></td><td>
+        <% if payment.paid? %>
+          <%= form_with url: refund_admin_payment_path(payment), class: "refund-form" do |form| %><%= form.text_field :reason, placeholder: "환불 사유", required: true %><%= form.submit "전액 환불", class: "button button-danger button-small", data: { turbo_confirm: "결제를 전액 환불하고 좌석을 반환할까요?" } %><% end %>
+        <% else %><small><%= payment.refund_reason %><br><%= payment.refunded_at.strftime("%m.%d %H:%M") %></small><% end %>
+      </td></tr>
+    <% end %>
+    <% if @payments.empty? %><tr><td colspan="5" class="empty-cell">결제 내역이 없습니다.</td></tr><% end %>
+  </tbody></table></div>
+</section>
+
+<section class="admin-section">
+  <h2>최근 감사 이벤트</h2>
+  <div class="table-wrap"><table><thead><tr><th>시간</th><th>이벤트</th><th>사용자</th><th>좌석</th><th>상세</th></tr></thead><tbody>
+    <% @events.each do |event| %><tr><td><%= event.occurred_at.strftime("%H:%M:%S") %></td><td><%= event_type_label(event.event_type) %></td><td><%= event.user.display_name %></td><td><%= event.seat_slot.seat.label %></td><td class="mono"><%= event.details.to_json %></td></tr><% end %>
+    <% if @events.empty? %><tr><td colspan="5" class="empty-cell">이력이 없습니다.</td></tr><% end %>
+  </tbody></table></div>
+</section>
